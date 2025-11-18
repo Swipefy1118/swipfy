@@ -1,0 +1,27 @@
+html {
+    background-color: black;
+    color: white;
+}
+
+.header {
+    padding: 10px;
+    text-align: center;
+}
+
+.Genre form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    text-align: center;
+}
+
+.genre-item {
+    width: 48%;
+    margin-bottom: 10px;
+}
+
+.genre-item input[type="checkbox"] {
+    transform: scale(1.5);
+    transform-origin: left center;
+    margin-right: 10px;
+}
