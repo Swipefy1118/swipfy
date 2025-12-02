@@ -1,0 +1,90 @@
+html {
+    background-color: black;
+    color: white;
+}
+
+.header {
+    padding: 10px;
+    text-align: center;
+}
+
+.header img {
+    width: 150px;
+    height: auto;
+}
+
+.Genre form {
+    width: fit-content; 
+    margin: 0 auto;
+}
+
+.Genre .check {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    column-gap: 120px; 
+    padding-bottom: 40px;
+}
+
+.genre-item {
+    display: flex; 
+    align-items: center;
+    padding: 5px;
+    gap: 40px; /* ラベルとチェックボックスの間の隙間 */
+}
+
+.genre-item label {
+    font-size: 30px;
+    flex-grow: 1; 
+    text-align: left; /* テキストは左揃えにする */
+}
+
+.genre-item input[type="checkbox"] {
+    transform: scale(2.5);
+    flex-shrink: 0;
+}
+
+.genre-text {
+    width: 100%; 
+    display: flex;
+    margin-top: 20px;
+    gap: 30px;
+    justify-content: center;
+    padding-bottom: 60px;
+}
+.genre-text label {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.genre-text input[type="text"] {
+    width: 300px;
+    height: 40px;
+    font-size: 20px;
+}
+
+.skip-link {
+    text-align: center;
+    margin-top: 20px;
+}
+.skip-link a{
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.skip-link a:hover {
+    color: #8f8b8b;
+}
+
+
+
+.submit {
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 30px;
+}
+
+.submit input[type="submit"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
