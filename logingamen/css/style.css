@@ -1,0 +1,123 @@
+/* h1と画像を横並びにする */
+.loginPng {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 16px;
+}
+.loginPng img {
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+.loginTitle {
+    text-align: center;
+    margin-bottom: 32px;
+}
+body{
+    display: flex;
+    min-height: 100vh; /* ビューポートの高さを占めて縦センタリングを可能にする */
+    align-items: center; /* 縦方向中央寄せ */
+    justify-content: center; /* 横方向中央寄せ */
+    flex-direction: column; /* 縦に要素を並べる */
+    margin: 0; /* ブラウザデフォルトの余白をリセット */
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+.loginPng{
+    display: block;
+    margin-right: 30px;
+    margin-bottom: 20px;
+    width: 50%;
+    height: auto;
+}
+/* 親要素の右上に画像を配置するために親を相対位置にする */
+.loginPng{
+    position: relative;
+}
+
+/* .loginPng 内の img を小さくして要素の右上に配置 */
+.loginPng img{
+    display: block;
+    width: 80px; /* 画像の幅（必要に応じて調整） */
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+.loginForm .input{
+    font-size: 30px;
+    flex: 1;
+}
+.logo{
+    text-align: center;
+}
+a{
+    font-size: 50px;
+    color: white;
+    text-decoration: none;
+    border-bottom: 10px solid green;
+    display: inline-block; /* 安定して左右の余白を取るため */
+    margin: 40px 12px; /* 左右に12pxずつ間隔を追加（必要なら調整してください） */
+}
+
+/* フォーム内のラベル幅を固定して入力欄の開始位置を揃える */
+.loginForm{
+    width: 520px; /* フォーム全体の幅（必要に応じて変更） */
+    margin: 0 auto;
+    text-align: left; /* ラベルと入力を左揃えにする */
+}
+
+.loginForm .user,
+.loginForm .password{
+    margin-bottom: 16px;
+}
+
+.loginForm label{
+    display: inline-block;
+    width: 140px; /* ラベルの固定幅：ここで入力開始位置が揃う */
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.loginForm input[type="text"],
+.loginForm input[type="password"],
+.loginForm input[type="email"]{
+    display: inline-block;
+    width: 340px; /* 入力欄の幅（ラベル幅 + 入力幅 がフォーム幅に収まるよう調整） */
+    padding: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+.loginSubmit{
+    text-align: center;
+    margin-top: 24px;
+    color: white;
+}
+
+/* ログインボタンを緑にするスタイル */
+.loginSubmit input[type="submit"]{
+    background-color: #28a745; /* 緑 */
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+}
+
+.loginSubmit input[type="submit"]:hover{
+    background-color: #218838; /* ホバー時に少し濃い緑 */
+}
+
+.loginSubmit input[type="submit"]:active{
+    transform: translateY(1px);
+}
+
+/* キーボード操作時のフォーカス可視化（アクセシビリティ向上） */
+.loginSubmit input[type="submit"]:focus{
+    outline: 3px solid rgba(40,167,69,0.25);
+    outline-offset: 2px;
+}
