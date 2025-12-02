@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初期画面</title>
+    <!-- <link rel="stylesheet" href="css/reset.css"> -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<div class="page">
+    <div class="card">
+        <form action="login.html" method="post">
+            <img src="img/SwipeFyLogo.png" alt="SwipeFy" class="logo">
+            <h1>登録する</h1>
+            <div class="row">
+                <label for="password">ID</label>
+                <input id="password" name="password" type="password" class="input">
+            </div>
+            <div class="row">
+                <label for="password">password</label>
+                <input id="password" name="password" type="password" class="input">
+            </div>
+
+            <div class="row">
+                <label for="display">表示名</label>
+                <input id="display" name="display" type="text" class="input">
+            </div>
+
+            <div class="date-of-birth">
+                <label>生年月日</label>
+                <div class="date">
+                    <div class="date-item">
+                        <input type="number" class="date-input" placeholder="年" min="1900" max="2025">
+                    </div>
+                    <div class="date-item">
+                        <input type="number" class="date-input" placeholder="月" min="1" max="12">
+                    </div>
+                    <div class="date-item">
+                        <input type="number" class="date-input" placeholder="日" min="1" max="31">
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form action="login.html" method="post">
+        <div class="row">
+            <div class="spacer"></div>
+            <button type="submit" class="btn">登録</button>
+        </div>
+        </form>
+    </div>
+</div>

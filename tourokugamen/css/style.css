@@ -1,0 +1,128 @@
+body{
+    background-color: black;
+    color: white;
+    font-size: 20px;
+}
+
+a {
+    text-align: center;
+}
+
+.page{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color:#e6e6e6;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* 黒いカード */
+.card{
+    background:#000;
+    /* border:2px solid #6b6b6b;
+    /* box-shadow:0 2px 6px rgba(0,0,0,0.6);  */
+    width:700px;
+    padding:20px 30px 30px;
+    text-align: center;
+} 
+
+/* タイトル */
+.card h1{
+    margin:0 0 10px;
+    color:#fff;
+    font-size:90px;
+    padding-bottom:6px;
+    border-bottom:1px solid #2e2e2e;
+}
+
+/* ロゴ */
+.logo{
+    width:90px;
+    height: auto;
+    display: block;
+}
+
+/* 行レイアウト */
+.row{
+    display:flex;
+    align-items:center;
+    margin:35px 0;
+}
+
+label{
+    width:120px;
+    color:#6fe24a; 
+    font-weight:600;
+    font-size: 23px;
+    text-decoration:underline;
+}
+
+/* 入力欄 */
+.input{
+    flex:1;
+    background:#fff;
+    color:#000;
+    border:1px solid #ccc;
+    padding:12px 14px;
+    height:32px;
+    font-size: 18px;
+    box-sizing:border-box;
+}
+
+/* 生年月日ブロック */
+.date-of-birth{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-top:6px;
+}
+
+.date{
+    display:flex;
+    gap:8px;
+    flex:1;
+    align-items:center;
+}
+
+.date-item{
+    width:75px;
+}
+
+.date-input{
+    width:100%;
+    padding:12px 10px;
+    box-sizing:border-box;
+    border:1px solid #ccc;
+    background:#fff;
+    color:#000;
+    height:32px;
+    font-size: 18px;
+}
+
+/* アクション行 */
+.actions{
+    margin-top:12px;
+    align-items:center;
+}
+
+/* スペーサーは左側に余白を作るための要素 */
+.spacer{
+    flex:1;
+}
+
+/* 登録ボタン */
+.btn{
+    background:#9cc86c;
+    border:1px solid #6fa23f;
+    color:#082004;
+    padding:12px 24px;
+    cursor:pointer;
+    font-weight:700;
+    font-size: 20px;
+}
+
+
