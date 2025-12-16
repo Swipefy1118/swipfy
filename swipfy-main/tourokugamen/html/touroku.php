@@ -5,9 +5,8 @@ $title = '登録画面';
 $logoSrc    = '../img/SwipeFyLogo.png';
 $loginPath  = $root . 'logingamen/html/login.php';
 
-// 保存先ディレクトリ・ファイル
-$dataDir = __DIR__ . '/../data';
-$dataFile = $dataDir . '/users.json';
+// db.php のパスを修正（tourokugamen/html から見た swipfy-main/logingamen/db.php）
+require_once __DIR__ . '/../../logingamen/db.php';
 
 $errors = [];
 $values = [
@@ -45,68 +44,197 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = '正しい日を入力してください。';
     }
 
-    // ユーザー保存処理
+    // DB 接続エラーがあれば停止
+    if (!empty($dbConnectError)) {
+        $errors[] = $dbConnectError;
+    }
+
     if (empty($errors)) {
-        // ディレクトリ作成
-        if (!is_dir($dataDir) && !mkdir($dataDir, 0755, true)) {
-            $errors[] = 'データ保存ディレクトリを作成できませんでした。';
-        } else {
-            $users = [];
-            if (file_exists($dataFile)) {
-                $json = file_get_contents($dataFile);
-                $decoded = json_decode($json, true);
-                if (is_array($decoded)) {
-                    $users = $decoded;
-                }
-            }
+        // // birth を YYYY-MM-DD に
+        // $birth = sprintf('%04d-%02d-%02d', (int)$values['year'], (int)$values['month'], (int)$values['day']);
 
-            // userid の重複チェック
-            foreach ($users as $u) {
-                if (isset($u['userid']) && $u['userid'] === $values['userid']) {
-                    $errors[] = 'その ID は既に使われています。';
-                    break;
-                }
-            }
-
-            if (empty($errors)) {
+        try {
+            // 重複チェック
+            $stmt = $pdo->prepare('SELECT COUNT(*) AS cnt FROM users WHERE userid = :userid');
+            $stmt->execute([':userid' => $values['userid']]);
+            $row = $stmt->fetch();
+            if ($row && isset($row['cnt']) && (int)$row['cnt'] > 0) {
+                $errors[] = 'その ID は既に使われています。';
+            } else {
+                // パスワードハッシュ化して登録
                 $hashed = password_hash($values['password'], PASSWORD_DEFAULT);
-                $users[] = [
-                    'userid'  => $values['userid'],
-                    'password'=> $hashed,
-                    'display' => $values['display'],
-                    'birth'   => sprintf('%04d-%02d-%02d', (int)$values['year'], (int)$values['month'], (int)$values['day']),
-                    'created_at' => date('c')
-                ];
 
-                $saved = file_put_contents($dataFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
-                if ($saved === false) {
-                    $errors[] = 'ユーザー情報の保存に失敗しました。';
-                } else {
-                    // 保存成功 -> ログインへ遷移または完了メッセージ
+                $insert = $pdo->prepare('INSERT INTO users (userid, password, display, year, month, day, created_at) VALUES (:userid, :password, :display, :year, :month, :day, :created_at)');
+                $ok = $insert->execute([
+                    ':userid' => $values['userid'],
+                    ':password' => $hashed,
+                    ':display' => $values['display'],
+                    ':year' => $values['year'],
+                    ':month' => $values['month'],
+                    ':day' => $values['day'],
+                    ':created_at' => date('Y-m-d H:i:s'),
+                ]);
+
+                if ($ok && (int)$pdo->lastInsertId() > 0) {
                     header('Location: ' . $loginPath);
                     exit;
+                } else {
+                    $errors[] = 'ユーザー情報の保存に失敗しました。';
+                    error_log('INSERT failed: ' . json_encode($pdo->errorInfo()));
                 }
             }
+        } catch (Exception $e) {
+            $errors[] = '登録処理中にエラーが発生しました。';
+            error_log('touroku exception: ' . $e->getMessage());
         }
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="ja">
+    <style>
+            body {
+        background-color: black;
+        color: white;
+        font-size: 20px;
+    }
+
+    a {
+        text-align: center;
+    }
+
+    .page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #e6e6e6;
+        text-align: center;
+        font-size: 24px;
+    }
+
+    /* カード */
+    .card {
+        background: #000;
+        width: 700px;
+        padding: 20px 30px 30px;
+        text-align: center;
+    }
+
+    /* タイトル */
+    .card h1 {
+        margin: 0 0 10px;
+        color: #fff;
+        font-size: 90px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #2e2e2e;
+    }
+
+    /* ロゴ */
+    .logo {
+        width: 90px;
+        height: auto;
+        display: block;
+        margin: 0 auto 12px;
+    }
+
+    /* 行レイアウト */
+    .row {
+        display: flex;
+        align-items: center;
+        margin: 35px 0;
+    }
+
+    label {
+        width: 120px;
+        color: #6fe24a;
+        font-weight: 600;
+        font-size: 23px;
+        text-decoration: underline;
+    }
+
+    /* 入力欄 */
+    .input {
+        flex: 1;
+        background: #fff;
+        color: #000;
+        border: 1px solid #ccc;
+        padding: 12px 14px;
+        height: 32px;
+        font-size: 18px;
+        box-sizing: border-box;
+    }
+
+    /* 生年月日*/
+    .date-of-birth {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 6px;
+    }
+
+    .date {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        align-items: center;
+    }
+
+    .date-item {
+        width: 75px;
+    }
+
+    .date-input {
+        width: 100%;
+        padding: 12px 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #000;
+        height: 32px;
+        font-size: 18px;
+    }
+
+    /* アクション行 */
+    .actions {
+        margin-top: 12px;
+        align-items: center;
+    }
+
+    .spacer {
+        flex: 1;
+    }
+
+    /* 登録ボタン */
+    .btn {
+        background: #9cc86c;
+        border: 1px solid #6fa23f;
+        color: #082004;
+        padding: 12px 24px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 20px;
+    }
+    </style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></title>
-    <link rel="stylesheet" href="<?php echo htmlspecialchars($css, ENT_QUOTES, 'UTF-8'); ?>">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+
+    </style>
 </head>
 <body>
     <div class="page">
         <div class="card">
-            <img src="<?php echo htmlspecialchars($logoSrc, ENT_QUOTES, 'UTF-8'); ?>" alt="SwipeFy" class="logo">
+            <img src="../img/SwipeFyLogo.png" alt="SwipeFy" class="logo">
             <h1>登録する</h1>
 
             <?php if (!empty($errors)): ?>
-                <div class="errors" style="color:#ffdddd;background:#400; padding:10px; margin-bottom:12px;">
+                <div class="errors">
                     <ul style="margin:0; padding-left:18px;">
                         <?php foreach ($errors as $e): ?>
                             <li><?php echo htmlspecialchars($e, ENT_QUOTES, 'UTF-8'); ?></li>
@@ -131,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input id="display" name="display" type="text" class="input" value="<?php echo htmlspecialchars($values['display'], ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
-                <div class="date-of-birth">
+                <div class="row" style="align-items:flex-start;">
                     <label>生年月日</label>
                     <div class="date">
                         <div class="date-item">
