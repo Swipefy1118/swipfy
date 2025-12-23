@@ -3,6 +3,8 @@ session_start();
 $accessToken = $_SESSION['at'] ?? null;
 if (!$accessToken) die("認証が必要です。");
 
+
+
 if (!isset($_SESSION['history'])) $_SESSION['history'] = [];
 $trackInfo = null;
 $action = $_POST['action'] ?? 'next';
