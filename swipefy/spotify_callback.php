@@ -25,7 +25,6 @@ if (isset($_GET['code'])) {
         $_SESSION['at'] = $data['access_token'];
         $_SESSION['rt'] = $data['refresh_token'] ?? '取得失敗';
         header('Location: menu.php');
-        // header('Location: playlist.php');
         exit;
     }
 }

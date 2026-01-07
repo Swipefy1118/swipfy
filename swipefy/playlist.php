@@ -1,66 +1,92 @@
 <?php
-// すでに取得済みのトークン
-// $access_token = $_SESSION['at'] ?? null;
-// if (!$accessToken) die("認証が必要です。");
-$access_token = 'BQAmwJPnm66S5JV6r2RnYDzNV05nrN46O31UPLe6GrdCIOCNQXIHSBcUCMiqxRxle1w0Wml_t5JHFW_ACXiTNVfR6f41ux0zOd1LqLv4OSQ0U3YpCWTk6pv1-V0CzbSS5duDQsYBx4cy26NnWeYSY_-QtYP73efU06fS5N3iNizzc4W_kSe2wgV8qCNumWzACscvA0IM8TueP6pO41SzrgSPGUlw31qLmSjHVuz3LXvSozQ_UOKZQ0C9vU_v2CUa49Qk__lj3DuhKFzWzXFXMaCQfUnqCMkD7C8zmtUXQZZxh3Zv4aJogmT78vbkl0USvc3V';
-// --- STEP 1: ユーザーIDを取得 ---
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://api.spotify.com/v1/me');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $access_token
-]);
-$user_res = json_decode(curl_exec($ch), true);
-$spotify_user_id = $user_res['id']; // あなたのSpotifyユーザーID
+session_start();
+$playlist = $_SESSION['playlist'] ?? [];
 
-
-// --- STEP 2: プレイリストを新規作成 ---
-$playlist_data = json_encode([
-    'name'        => 'My New XAMPP Playlist', // プレイリスト名
-    'description' => 'Created via PHP script',
-    'public'      => true
-]);
-
-curl_setopt($ch, CURLOPT_URL, "https://api.spotify.com/v1/users/$spotify_user_id/playlists");
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $playlist_data);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $access_token,
-    'Content-Type: application/json'
-]);
-
-$playlist_res = json_decode(curl_exec($ch), true);
-curl_close($ch);
-
-// 作成されたプレイリストのIDを取得
-if (isset($playlist_res['id'])) {
-    $created_playlist_id = $playlist_res['id'];
-    $created_playlist_name = $playlist_res['name'];
-    
-    echo "Spotify上にプレイリストを作成しました。ID: " . $created_playlist_id . "<br>";
-} else {
-    die("エラー：プレイリストの作成に失敗しました。");
-}
-
-
-// --- STEP 3: MySQL(DB)へ保存 ---
-$host = 'localhost';
-$dbname = 'your_database_name'; // あなたのDB名
-$user = 'root';                 // XAMPPのデフォルト
-$pass = '';                     // XAMPPのデフォルト
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-    
-    $sql = "INSERT INTO playlists (spotify_id, playlist_name, created_at) VALUES (:id, :name, NOW())";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':id'   => $created_playlist_id,
-        ':name' => $created_playlist_name
-    ]);
-    
-    echo "データベースへの保存も完了しました！";
-} catch (PDOException $e) {
-    echo "DBエラー: " . $e->getMessage();
+// 削除処理
+if (isset($_POST['delete_id'])) {
+    $_SESSION['playlist'] = array_filter($_SESSION['playlist'], function($item) {
+        return $item['id'] !== $_POST['delete_id'];
+    });
+    header("Location: playlist.php");
+    exit;
 }
 ?>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playlist - SwipeFy</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+        header { display: flex; align-items: center; margin-bottom: 30px; }
+        .back-btn { color: #a8d5ba; text-decoration: none; font-size: 24px; margin-right: 20px; }
+        h1 { font-size: 24px; margin: 0; }
+        
+        .playlist-container { display: flex; flex-direction: column; gap: 15px; }
+        .track-item { 
+            display: flex; align-items: center; background: #111; 
+            padding: 10px; border-radius: 10px; border-left: 4px solid #a8d5ba;
+        }
+        .track-item img { width: 60px; height: 60px; border-radius: 5px; margin-right: 15px; }
+        .track-info { flex-grow: 1; min-width: 0; }
+        .track-name { font-weight: bold; margin: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { font-size: 13px; color: #aaa; margin: 4px 0 0; }
+        
+        .play-preview { background: none; border: 1px solid #a8d5ba; color: #a8d5ba; border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; margin-right: 10px; }
+        .del-btn { background: none; border: none; color: #ff4d4d; font-size: 20px; cursor: pointer; }
+        
+        .empty-msg { text-align: center; color: #666; margin-top: 100px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="menu.php" class="back-btn">❮</a>
+    <h1>My Playlist</h1>
+</header>
+
+<div class="playlist-container">
+    <?php if (empty($playlist)): ?>
+        <div class="empty-msg">
+            <p>まだお気に入りの曲がありません。<br>スワイプして曲を探そう！</p>
+        </div>
+    <?php else: ?>
+        <?php foreach ($playlist as $track): ?>
+            <div class="track-item">
+                <img src="<?= htmlspecialchars($track['image']) ?>">
+                <div class="track-info">
+                    <p class="track-name"><?= htmlspecialchars($track['name']) ?></p>
+                    <p class="artist-name"><?= htmlspecialchars($track['artist']) ?></p>
+                </div>
+                
+                <?php if ($track['preview']): ?>
+                    <button class="play-preview" onclick="playAudio('<?= $track['preview'] ?>')">試聴</button>
+                <?php endif; ?>
+
+                <form method="POST" style="margin:0;">
+                    <input type="hidden" name="delete_id" value="<?= $track['id'] ?>">
+                    <button type="submit" class="del-btn">×</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
+<script>
+    let currentAudio = null;
+    function playAudio(url) {
+        if (currentAudio) {
+            currentAudio.pause();
+            if (currentAudio.src === url) {
+                currentAudio = null;
+                return;
+            }
+        }
+        currentAudio = new Audio(url);
+        currentAudio.play();
+    }
+</script>
+
+</body>
+</html>

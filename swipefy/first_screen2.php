@@ -14,7 +14,7 @@ $authUrl = 'https://accounts.spotify.com/authorize?' . http_build_query([
     'show_dialog' => true 
 ]);
 
-echo '<a href="' . $authUrl . '">Spotifyでログイン（再生権限を付与）</a>';
+echo '<a href="' . $authUrl . '">Spotifyでログイン</a>';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -178,7 +178,7 @@ echo '<a href="' . $authUrl . '">Spotifyでログイン（再生権限を付与�
     // 1. API通信に必要な定義
     // ---------------------------------------------
     // 個人のトークンを取得してここに貼る
-    const token = 'BQDhPA0J7qkkgZtXrYPfjJDNSPTg59l6b5lQXvVdxdv9r9QasBAu7GrV_WlzPe3MPjoQDB0OLIM09MlJXG5m9sREjeuYlW5Dyt4YuwRFbv3lGaS0gzXS9fL9bQ2XqrbZp0Q9U3Fwgj6JVg5TNzurAEpapkkJV9ymST811_O1Gqt9TbaV043z3zZ34j3M_baE-rzzNu_wlqMgxYNQ_oeI1R-nVnuWAu3qpWBxVXSlvYghRtb33SsWP_N0-vwawUQ'; 
+    const token = 'BQBKxCoW4jNSn8kuprGBqdSO2wFy2GtdzqYo743R0AvGbkEejQp2-td7FUUQkIN3WL2V4XPNZyCIJaLXyyUUU1ZJ79LbHWRxPcIdV20P_DMHK-TM7GVMZ1F5aihQSbcRAQV0lMi10HE-qoR8pRht_77FK1iyGb2r8CF8uNLB_HBtWjt_C7Pap1cW0rhWRHxmnP5Ou9CiWtdbL_Xw0mlSFLA3ed6jFYdVUhepQ6t1NWnG7R4Nb0hqZ-t7Veik4B9r6gFdWaeR8l5UjkWxhPENzQMCWHzszBjwJibycYahyjqktnnmzUJ9OyD2ytLpkV5_dQSM'; 
 
     async function fetchWebApi(endpoint, method, body) {
         const res = await fetch(`https://api.spotify.com/${endpoint}`, {
